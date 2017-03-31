@@ -68,7 +68,7 @@ void main() {
 
 
 
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Primera ventana", nullptr, nullptr);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Cubito en minecraft", nullptr, nullptr);
 	if (!window) {
 		cout << "Error al crear la ventana" << endl;
 		glfwTerminate();
@@ -308,7 +308,7 @@ void main() {
 
 	int widthTex2, heightTex2;
 
-	unsigned char* image2 = SOIL_load_image("./src/PablitoSatan.png", &widthTex2, &heightTex2, 0, SOIL_LOAD_RGB);
+	unsigned char* image2 = SOIL_load_image("./src/texture2.png", &widthTex2, &heightTex2, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex2, heightTex2, 0, GL_RGB, GL_UNSIGNED_BYTE, image2);
 	SOIL_free_image_data(image2);
 
