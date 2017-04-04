@@ -22,8 +22,6 @@ float gradosRot = 0;
 float aumentoRot;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 bool aumentarRotRight, aumentarRotLeft,aumentarUp,aumentarDown;
-
-
 bool camUp, camDown, camLeft, camRight;
 vec3 camPosVec, camDirVec, camRightVec;
 float camSpeed = 0.15f;
@@ -43,6 +41,13 @@ void DrawVao(GLuint programID, GLuint VAO) {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
+}
+
+void DoMovement(GLFWwindow* window) {
+	camUp = glfwGetKey(window, GLFW_KEY_W);
+	camDown = glfwGetKey(window, GLFW_KEY_S);
+	camLeft = glfwGetKey(window, GLFW_KEY_A);
+	camRight = glfwGetKey(window, GLFW_KEY_D);
 }
 
 mat4 GenerateModelMatrix(vec3 aTranslation, vec3 aRotation, vec3 CubesPosition, float aRot) {
@@ -426,7 +431,7 @@ void main() {
 		}
 
 		//Cam movement
-		//DoMovement(window);
+		DoMovement(window);
 
 		if (camUp) {
 			camPosVec += camDirVec * camSpeed;
@@ -544,7 +549,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 
-	if (key == GLFW_KEY_W&&action == GLFW_PRESS) {
+	/*if (key == GLFW_KEY_W&&action == GLFW_PRESS) {
 		camUp = true;
 	}
 	else if (key == GLFW_KEY_W&&action == GLFW_RELEASE) {
@@ -570,15 +575,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	else if (key == GLFW_KEY_D&&action == GLFW_RELEASE) {
 		camRight = false;
-	}
+	}*/
 
 
 }
 
-void DoMovement(GLFWwindow* window) {
-	camUp = glfwGetKey(window, 'w');
-	camDown = glfwGetKey(window, 's');
-	camLeft = glfwGetKey(window, 'a');
-	camRight = glfwGetKey(window, 'd');
-}
+
 
