@@ -22,6 +22,12 @@ float gradosRot = 0;
 float aumentoRot;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 bool aumentarRotRight, aumentarRotLeft,aumentarUp,aumentarDown;
+
+
+bool camUp, camDown, camLeft, camRight;
+vec3 camPosVec, camDirVec, camRightVec;
+float camSpeed = 0.15f;
+
 void DrawVao(GLuint programID, GLuint VAO) {
 	//establecer el shader
 	glUseProgram(programID);
@@ -48,6 +54,7 @@ mat4 GenerateModelMatrix(vec3 aTranslation, vec3 aRotation, vec3 CubesPosition, 
 	return temp;
 }
 
+
 void main() {
 	mixStuff = 0.0f;
 	//initGLFW
@@ -68,7 +75,7 @@ void main() {
 
 
 
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Cubito en minecraft", nullptr, nullptr);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Primera ventana", nullptr, nullptr);
 	if (!window) {
 		cout << "Error al crear la ventana" << endl;
 		glfwTerminate();
@@ -245,9 +252,9 @@ void main() {
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(1, 0, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
-		glEnableVertexAttribArray(1);
+		
+		//glVertexAttribPointer(1, 0, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
+		//glEnableVertexAttribArray(1);
 
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
 		glEnableVertexAttribArray(2);
@@ -314,11 +321,14 @@ void main() {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	aumentoRot = 0.05f;
+	aumentoRot = 0.5f;
 	
 	glEnable(GL_DEPTH_TEST);
 	//bucle de dibujado
 
+	camPosVec = vec3(0.f, 0.f, -3.f);
+	camDirVec = (vec3(0.f, 0.f, 0.f) - camPosVec) / glm::length((vec3(0.f, 0.f, 0.f) - camPosVec));
+	camRightVec = glm::cross(camDirVec, vec3(0,1,0) / glm::length(glm::cross(camDirVec, vec3(0, 1, 0))));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -333,6 +343,7 @@ void main() {
 		if (gradosRot > 360 || gradosRot < -360) {
 			gradosRot = 0;
 		}
+
 
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 
@@ -414,6 +425,24 @@ void main() {
 			}
 		}
 
+		//Cam movement
+		//DoMovement(window);
+
+		if (camUp) {
+			camPosVec += camDirVec * camSpeed;
+		}
+		else if (camDown) {
+			camPosVec -= camDirVec * camSpeed;
+
+		}
+
+		if (camRight) {
+			camPosVec += camRightVec * camSpeed;
+		}
+		else if (camLeft) {
+			camPosVec -= camRightVec * camSpeed;
+		}
+
 		//matriz = translate(matriz, vec3(0.5f, 0.5f, 0));
 
 
@@ -423,7 +452,8 @@ void main() {
 
 		proj = perspective(FOV, (float)(800/600), 0.1f, 100.0f);
 
-		cam = translate(cam, vec3(0.0f, 0.0f, -3.0f));
+		cam = translate(cam, vec3(camPosVec.x, camPosVec.y, camPosVec.z));
+
 		//glUniformMatrix4fv(matProjID, 1, GL_FALSE, glm::value_ptr(proj));
 		//glUniformMatrix4fv(matViewID, 1, GL_FALSE, glm::value_ptr(cam));
 
@@ -513,4 +543,42 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		fade1 = false;
 	}
 
+
+	if (key == GLFW_KEY_W&&action == GLFW_PRESS) {
+		camUp = true;
+	}
+	else if (key == GLFW_KEY_W&&action == GLFW_RELEASE) {
+		camUp = false;
+	}
+
+	if (key == GLFW_KEY_A&&action == GLFW_PRESS) {
+		camLeft = true;
+	}
+	else if (key == GLFW_KEY_A&&action == GLFW_RELEASE) {
+		camLeft = false;
+	}
+
+	if (key == GLFW_KEY_S&&action == GLFW_PRESS) {
+		camDown = true;
+	}
+	else if (key == GLFW_KEY_S&&action == GLFW_RELEASE) {
+		camDown = false;
+	}
+
+	if (key == GLFW_KEY_D&&action == GLFW_PRESS) {
+		camRight = true;
+	}
+	else if (key == GLFW_KEY_D&&action == GLFW_RELEASE) {
+		camRight = false;
+	}
+
+
 }
+
+void DoMovement(GLFWwindow* window) {
+	camUp = glfwGetKey(window, 'w');
+	camDown = glfwGetKey(window, 's');
+	camLeft = glfwGetKey(window, 'a');
+	camRight = glfwGetKey(window, 'd');
+}
+
