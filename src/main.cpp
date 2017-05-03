@@ -23,10 +23,54 @@ float rotacionX,rotacionY = 0.0f;
 float gradosRot = 0;
 float aumentoRot;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
 bool aumentarRotRight, aumentarRotLeft,aumentarUp,aumentarDown;
 bool camUp, camDown, camLeft, camRight;
 vec3 camPosVec, camDirVec, camRightVec;
 float camSpeed = 0.15f;
+float yawMove, pitchMove = 0.f;
+bool firstMouseEnter = false;
+
+class Camera {
+	Camera(vec3 position, vec3 direction, GLfloat sensitivity, GLfloat fov);
+
+public:
+	void DoMovement(GLFWwindow* window) {
+		camUp = glfwGetKey(window, GLFW_KEY_W);
+		camDown = glfwGetKey(window, GLFW_KEY_S);
+		camLeft = glfwGetKey(window, GLFW_KEY_A);
+		camRight = glfwGetKey(window, GLFW_KEY_D);
+	}
+
+	void MouseControl(GLFWwindow* window, double xpos, double ypos) {
+		vec2 pos = vec2(xpos, ypos);
+		vec2 lastPos = vec2(0, 0);
+		vec2 offset = (pos - lastPos) * 0.04f;
+
+		if (firstMouseEnter) {
+			lastPos = pos;
+			firstMouseEnter = false;
+		}
+
+		lastPos = pos;
+		yawMove += offset.x;
+		pitchMove += offset.y;
+
+		pitchMove = clamp(pitchMove, -89.f, 89.f);
+		yawMove = mod(yawMove, 360.f);
+
+	}
+
+	void MouseScroll(GLFWwindow* window, double xoffset, double yoffset) {
+
+	}
+
+private:
+	vec3 cameraPos, cameraFront, cameraUp;
+	GLfloat deltaTime, lastFrame, lastMx, lastMY, sensitivity, pitchValue, yawValue, FOV;
+	GLboolean firstMouse;
+
+};
 
 void DrawVao(GLuint programID, GLuint VAO) {
 	//establecer el shader
@@ -45,13 +89,6 @@ void DrawVao(GLuint programID, GLuint VAO) {
 
 }
 
-void DoMovement(GLFWwindow* window) {
-	camUp = glfwGetKey(window, GLFW_KEY_W);
-	camDown = glfwGetKey(window, GLFW_KEY_S);
-	camLeft = glfwGetKey(window, GLFW_KEY_A);
-	camRight = glfwGetKey(window, GLFW_KEY_D);
-}
-
 mat4 GenerateModelMatrix(vec3 aTranslation, vec3 aRotation, vec3 CubesPosition, float aRot) {
 	mat4 temp;
 	temp = translate(temp, aTranslation);
@@ -64,6 +101,7 @@ mat4 GenerateModelMatrix(vec3 aTranslation, vec3 aRotation, vec3 CubesPosition, 
 
 void main() {
 	mixStuff = 0.0f;
+
 	//initGLFW
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -112,9 +150,6 @@ void main() {
 
 	//fondo
 	glClearColor(0.0, 0.0, 1.0, 1.0);
-
-
-	//TODO
 
 
 	//cargamos los shader
@@ -334,6 +369,11 @@ void main() {
 	glEnable(GL_DEPTH_TEST);
 	//bucle de dibujado
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, Camera::MouseControl);
+
+	glfwSetScrollCallback(window, Camera::MouseScroll);
+
 	camPosVec = vec3(0.f, 0.f, -3.f);
 	camDirVec = (vec3(0.f, 0.f, 0.f) - camPosVec) / glm::length((vec3(0.f, 0.f, 0.f) - camPosVec));
 	camRightVec = glm::cross(camDirVec, vec3(0,1,0) / glm::length(glm::cross(camDirVec, vec3(0, 1, 0))));
@@ -435,7 +475,7 @@ void main() {
 			}
 		}
 
-		//Cam movement
+		//Cam move
 		DoMovement(window);
 
 		if (camUp) {
