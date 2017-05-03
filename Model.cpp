@@ -1,9 +1,5 @@
-#include "Mesh.h"
 #include "Model.h"
-#include <SOIL.h>
-#include <..\assimp\Importer.hpp>
-#include <..\assimp\scene.h>
-#include <..\assimp\postprocess.h>
+
 
 
 Model::Model(){
@@ -56,7 +52,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	for (GLuint i = 0; i < mesh->mNumVertices; i++){
 		Vertex vertex;
 		// Process vertex positions, normals and texture coordinates
-		vec3 vectAux;
+		glm::vec3 vectAux;
 		vectAux.x = mesh->mVertices[i].x;
 		vectAux.y = mesh->mVertices[i].y;
 		vectAux.z = mesh->mVertices[i].z;
@@ -69,7 +65,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 			vertex.Normal = vectAux;
 		}
-		vec2 vec = vec2(0.0f, 0.0f);
+		glm::vec2 vec = glm::vec2(0.0f, 0.0f);
 		if (mesh->mTextureCoords[0]){// Comprobamos que tenga textura
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;	

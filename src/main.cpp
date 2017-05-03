@@ -9,6 +9,8 @@
 #include <gtc/type_ptr.hpp>
 #include "..\Shader.h"
 #include <SOIL.h>
+#include "..\Mesh.h"
+#include "..\Model.h"
 
 using namespace glm;
 using namespace std;
@@ -119,7 +121,7 @@ void main() {
 
 	//Shader shader = Shader("./src/SimpleVertexShader.vertexshader", "./src/SimpleFragmentShader.fragmentshader");
 
-	Shader shader = Shader("./src/textureVertex3d.vertexshader", "./src/textureFragment3d.fragmentshader");
+	Shader shader = Shader("./src/model3D.vertexshader", "./src/model3DFrag.fragmentshader");
 
 	//GLuint programID = shader.Program;
 
@@ -151,6 +153,7 @@ void main() {
 	//	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left 
 	//};
 
+	/*
 	GLfloat VertexBufferObject[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 		0.5f , -0.5f, -0.5f,  1.0f, 0.0f,
@@ -208,7 +211,7 @@ void main() {
 		vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-
+	*/
 	//Numbuffer = cantidad de buffers a generar;
 
 	//Borrado
@@ -237,15 +240,15 @@ void main() {
 
 	// Crear los VBO, VAO y EBO
 
-	GLuint VAO, /*EBO,*/ VBO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO); {
+	//GLuint VAO, EBO, VBO;
+	//glGenVertexArrays(1, &VAO);
+	//glBindVertexArray(VAO); {
 
-		glGenBuffers(1, &VBO);
+		//glGenBuffers(1, &VBO);
 		//Se enlaza el buffer para poder usarlo
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		//glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		//Se pasan los datos
-		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferObject), VertexBufferObject, GL_DYNAMIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferObject), VertexBufferObject, GL_DYNAMIC_DRAW);
 
 
 	/*	glGenBuffers(1, &EBO);
@@ -255,20 +258,20 @@ void main() {
 
 		//Propiedades
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)0);
+		//glEnableVertexAttribArray(0);
 		
 		//glVertexAttribPointer(1, 0, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
 		//glEnableVertexAttribArray(1);
 
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
-		glEnableVertexAttribArray(2);
+		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GL_FLOAT)));
+		//glEnableVertexAttribArray(2);
 
 		//LIMPIA LOS BUFFERS DE VERTICES
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	}glBindVertexArray(0);
+	//}glBindVertexArray(0);
 
 
 
@@ -291,40 +294,40 @@ void main() {
 	//GLint loc = glGetUniformLocation(shader.Program, "time");
 
 
-	GLuint texture1, texture2;
+	//GLuint texture1, texture2;
 
-	//GLint matProjID,matViewID,matModelID;
+	GLint matProjID,matViewID,matModelID;
 	GLint matrizDefID;
 
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
+	//glGenTextures(1, &texture1);
+	//glBindTexture(GL_TEXTURE_2D, texture1);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	int widthTex, heightTex;
-	//widthTex = heightTex = 512;
-	unsigned char* image = SOIL_load_image("./src/texture.png", &widthTex, &heightTex, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex, heightTex, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	SOIL_free_image_data(image);
+	//int widthTex, heightTex;
+	////widthTex = heightTex = 512;
+	//unsigned char* image = SOIL_load_image("./src/texture.png", &widthTex, &heightTex, 0, SOIL_LOAD_RGB);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex, heightTex, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	//SOIL_free_image_data(image);
 
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
+	//glGenTextures(1, &texture2);
+	//glBindTexture(GL_TEXTURE_2D, texture2);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	int widthTex2, heightTex2;
+	//int widthTex2, heightTex2;
 
-	unsigned char* image2 = SOIL_load_image("./src/texture2.png", &widthTex2, &heightTex2, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex2, heightTex2, 0, GL_RGB, GL_UNSIGNED_BYTE, image2);
-	SOIL_free_image_data(image2);
+	//unsigned char* image2 = SOIL_load_image("./src/texture2.png", &widthTex2, &heightTex2, 0, SOIL_LOAD_RGB);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex2, heightTex2, 0, GL_RGB, GL_UNSIGNED_BYTE, image2);
+	//SOIL_free_image_data(image2);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	aumentoRot = 0.5f;
 	
@@ -334,6 +337,8 @@ void main() {
 	camPosVec = vec3(0.f, 0.f, -3.f);
 	camDirVec = (vec3(0.f, 0.f, 0.f) - camPosVec) / glm::length((vec3(0.f, 0.f, 0.f) - camPosVec));
 	camRightVec = glm::cross(camDirVec, vec3(0,1,0) / glm::length(glm::cross(camDirVec, vec3(0, 1, 0))));
+
+	Model araña("./src/spider/spider.obj");
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -389,18 +394,18 @@ void main() {
 
 		//glBindTexture(GL_TEXTURE_2D, texture1);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glUniform1i(locTex,0);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture1);
+		//glUniform1i(locTex,0);
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(locTex2, 1);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, texture2);
+		//glUniform1i(locTex2, 1);
 		
-		glBindVertexArray(VAO);
+		//glBindVertexArray(VAO);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		
+		araña.Draw(shader,GL_DYNAMIC_DRAW);
 		
 		//pintar con lineas
 		//pintar con triangulos
@@ -462,28 +467,30 @@ void main() {
 		//glUniformMatrix4fv(matProjID, 1, GL_FALSE, glm::value_ptr(proj));
 		//glUniformMatrix4fv(matViewID, 1, GL_FALSE, glm::value_ptr(cam));
 
-		for (int i = 0; i < 10; i++) {
-			mat4 matriz;
-			if (i == 0) {
-				matriz = translate(matriz, CubesPositionBuffer[0]);
-				matriz = rotate(matriz, radians(rotacionX), vec3(1,0,0));
-				matriz = rotate(matriz, radians(rotacionY),vec3(0,1,0));
-			}
-			else {
-				float rotot = glfwGetTime() * 100;
-				rotot = (int)rotot % 360;
-				matriz = GenerateModelMatrix(vec3(0.0f), vec3(1, 0.5f, 0), CubesPositionBuffer[i], rotot);
-			}
-			//glUniformMatrix4fv(matModelID, 1, GL_FALSE, glm::value_ptr(matriz));
+		//for (int i = 0; i < 10; i++) {
+		//	mat4 matriz;
+		//	if (i == 0) {
+		//		matriz = translate(matriz, CubesPositionBuffer[0]);
+		//		matriz = rotate(matriz, radians(rotacionX), vec3(1,0,0));
+		//		matriz = rotate(matriz, radians(rotacionY),vec3(0,1,0));
+		//	}
+		//	else {
+		//		float rotot = glfwGetTime() * 100;
+		//		rotot = (int)rotot % 360;
+		//		matriz = GenerateModelMatrix(vec3(0.0f), vec3(1, 0.5f, 0), CubesPositionBuffer[i], rotot);
+		//	}
+		//	//glUniformMatrix4fv(matModelID, 1, GL_FALSE, glm::value_ptr(matriz));
 
-			mat4 matrizDefinitiva;
+		//	mat4 matrizDefinitiva;
 
-			matrizDefinitiva = proj*cam*matriz;
+		//	matrizDefinitiva = proj*cam*matriz;
 
-			glUniformMatrix4fv(matrizDefID, 1, GL_FALSE, glm::value_ptr(matrizDefinitiva));
+		//	glUniformMatrix4fv(matrizDefID, 1, GL_FALSE, glm::value_ptr(matrizDefinitiva));
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		//	glDrawArrays(GL_TRIANGLES, 0, 36);
+		//}
+		
+
 		glBindVertexArray(0);
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
@@ -492,8 +499,8 @@ void main() {
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	//glDeleteVertexArrays(1, &VAO);
+	//glDeleteBuffers(1, &VBO);
 	//glDeleteBuffers(1, &EBO);
 
 	glfwDestroyWindow(window);

@@ -1,4 +1,14 @@
 #pragma once
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include "Shader.h"
+#include <GL\glew.h>
+#include <gtc\matrix_transform.hpp>
+#include <glm.hpp>
+#include "..\assimp\include\assimp\types.h"
 
 struct Vertex
 {
@@ -19,6 +29,7 @@ class Mesh {
 		vector<Vertex> vertices;
 		vector<GLuint> indices;
 		vector<Texture> textures;
+		GLuint VBO, EBO, VAO;
 
 	public:
 	Mesh::Mesh(vector<Vertex>, vector<GLuint>, vector<Texture>);
