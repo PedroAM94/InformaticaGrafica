@@ -32,14 +32,38 @@ float yawMove, pitchMove = 0.f;
 bool firstMouseEnter = false;
 
 class Camera {
-	Camera(vec3 position, vec3 direction, GLfloat sensitivity, GLfloat fov);
-
+	vec3 cameraPos, cameraFront, cameraUp;
+	GLfloat deltaTime, lastFrame, lastMx, lastMY, Sensitivity, PITCH, YAW, FOV;
+	GLboolean firstMouse;
 public:
+	Camera(vec3 position, vec3 direction, GLfloat sensitivity, GLfloat fov) {
+		cameraPos = position;
+		cameraFront = direction;
+		Sensitivity = sensitivity;
+		FOV = fov;
+
+		glm::vec3 directionX = glm::normalize(glm::vec3(0, cameraFront.y, cameraFront.z));
+		glm::vec3 directionY = glm::normalize(glm::vec3(cameraFront.x,0,cameraFront.z));
+		PITCH = 90.0f - glm::degrees(glm::acos(glm::dot(glm::vec3(0, 1, 0), directionX)));
+		YAW = 90.f - glm::degrees(glm::acos(glm::dot(directionY, glm::vec3(0,0,1))));
+	}
+
+
 	void DoMovement(GLFWwindow* window) {
-		camUp = glfwGetKey(window, GLFW_KEY_W);
-		camDown = glfwGetKey(window, GLFW_KEY_S);
-		camLeft = glfwGetKey(window, GLFW_KEY_A);
-		camRight = glfwGetKey(window, GLFW_KEY_D);
+		if (glfwGetKey(window, GLFW_KEY_W)) {
+			cameraPos += cameraFront * Sensitivity;
+
+		}
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			cameraPos -= cameraFront * Sensitivity;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			cameraPos += glm::cross(cameraFront, vec3(0, 1, 0) / glm::length(glm::cross(cameraFront, vec3(0, 1, 0)))) * Sensitivity;
+
+		}
+		if(glfwGetKey(window, GLFW_KEY_D)) {
+			cameraPos -= glm::cross(cameraFront, vec3(0, 1, 0) / glm::length(glm::cross(cameraFront, vec3(0, 1, 0)))) * Sensitivity;
+		}
 	}
 
 	void MouseControl(GLFWwindow* window, double xpos, double ypos) {
@@ -59,16 +83,19 @@ public:
 		pitchMove = clamp(pitchMove, -89.f, 89.f);
 		yawMove = mod(yawMove, 360.f);
 
+		lastMx = lastPos.x;
+		lastMY = lastPos.y;
+
+		PITCH = pitchMove;
+		YAW = yawMove;
 	}
 
 	void MouseScroll(GLFWwindow* window, double xoffset, double yoffset) {
+		
+
 
 	}
 
-private:
-	vec3 cameraPos, cameraFront, cameraUp;
-	GLfloat deltaTime, lastFrame, lastMx, lastMY, sensitivity, pitchValue, yawValue, FOV;
-	GLboolean firstMouse;
 
 };
 
@@ -118,6 +145,7 @@ void main() {
 	//TODO
 	GLFWwindow* window;
 
+	
 
 
 	window = glfwCreateWindow(WIDTH, HEIGHT, "Primera ventana", nullptr, nullptr);
@@ -368,22 +396,26 @@ void main() {
 	
 	glEnable(GL_DEPTH_TEST);
 	//bucle de dibujado
-
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, Camera::MouseControl);
-
-	glfwSetScrollCallback(window, Camera::MouseScroll);
-
 	camPosVec = vec3(0.f, 0.f, -3.f);
 	camDirVec = (vec3(0.f, 0.f, 0.f) - camPosVec) / glm::length((vec3(0.f, 0.f, 0.f) - camPosVec));
-	camRightVec = glm::cross(camDirVec, vec3(0,1,0) / glm::length(glm::cross(camDirVec, vec3(0, 1, 0))));
+	camRightVec = glm::cross(camDirVec, vec3(0, 1, 0) / glm::length(glm::cross(camDirVec, vec3(0, 1, 0))));
+
+	Camera cam(camPosVec, camDirVec, 0.04f, 60);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
+	glfwSetCursorPosCallback(window, cam.MouseControl);
+
+	glfwSetScrollCallback(window, cam.MouseScroll);
+
+	
 
 	Model araña("./src/spider/spider.obj");
 
 	while (!glfwWindowShouldClose(window))
 	{
 		//mat4 finalMatrix; //Modelo
-		mat4 cam; //Vista
+		//mat4 cam; //Vista
 		mat4 proj; //Proyeccion
 
 
@@ -476,23 +508,7 @@ void main() {
 		}
 
 		//Cam move
-		DoMovement(window);
-
-		if (camUp) {
-			camPosVec += camDirVec * camSpeed;
-		}
-		else if (camDown) {
-			camPosVec -= camDirVec * camSpeed;
-
-		}
-
-		if (camRight) {
-			camPosVec += camRightVec * camSpeed;
-		}
-		else if (camLeft) {
-			camPosVec -= camRightVec * camSpeed;
-		}
-
+		
 		//matriz = translate(matriz, vec3(0.5f, 0.5f, 0));
 
 
@@ -502,7 +518,7 @@ void main() {
 
 		proj = perspective(FOV, (float)(800/600), 0.1f, 100.0f);
 
-		cam = translate(cam, vec3(camPosVec.x, camPosVec.y, camPosVec.z));
+		//cam = translate(cam, vec3(camPosVec.x, camPosVec.y, camPosVec.z));
 
 		//glUniformMatrix4fv(matProjID, 1, GL_FALSE, glm::value_ptr(proj));
 		//glUniformMatrix4fv(matViewID, 1, GL_FALSE, glm::value_ptr(cam));
@@ -594,35 +610,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_2&&action == GLFW_PRESS) {
 		fade1 = false;
 	}
-
-
-	/*if (key == GLFW_KEY_W&&action == GLFW_PRESS) {
-		camUp = true;
-	}
-	else if (key == GLFW_KEY_W&&action == GLFW_RELEASE) {
-		camUp = false;
-	}
-
-	if (key == GLFW_KEY_A&&action == GLFW_PRESS) {
-		camLeft = true;
-	}
-	else if (key == GLFW_KEY_A&&action == GLFW_RELEASE) {
-		camLeft = false;
-	}
-
-	if (key == GLFW_KEY_S&&action == GLFW_PRESS) {
-		camDown = true;
-	}
-	else if (key == GLFW_KEY_S&&action == GLFW_RELEASE) {
-		camDown = false;
-	}
-
-	if (key == GLFW_KEY_D&&action == GLFW_PRESS) {
-		camRight = true;
-	}
-	else if (key == GLFW_KEY_D&&action == GLFW_RELEASE) {
-		camRight = false;
-	}*/
 
 
 }
